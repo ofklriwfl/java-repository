@@ -1,0 +1,1 @@
+The only file that needs to be opened and run is NoiseGUI.java
