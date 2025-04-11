@@ -49,6 +49,7 @@ public class Modify {
 	static boolean play = false;
 	static SourceDataLine sourceDataLine;
 	static int increment = 8;
+	static int outer;
 	//static int index = 0;
 	volatile static int index = 0;
 	
@@ -116,11 +117,16 @@ public class Modify {
 				NoiseGUI.playSound.setMaximum((int) (bytes.length / 2.0) - 48);
 			}
 			*/
-			if (increment == 4) {
-				NoiseGUI.playSound.setMaximum(bytes.length - 49);
-			} else {
-				NoiseGUI.playSound.setMaximum((int) (bytes.length / 2.0) - 49);
+			outer = 0;
+			while (outer < bytes.length - 4) {
+				if (bytes[outer] == 'd' && bytes[outer + 1] == 'a' && bytes[outer + 2] == 't' && bytes[outer + 3] == 'a') {
+					outer += 4;
+
+					break;
+				}
+				outer++;
 			}
+			NoiseGUI.playSound.setMaximum(bytes.length - outer);
 			int byteLength = NoiseGUI.playSound.getMaximum();
 			//int seconds = (int) (byteLength / 44100.0) % 60;
 			//int totalSeconds = (int) (byteLength / 44100.0);
@@ -675,13 +681,7 @@ public class Modify {
 				for (int i = 0; i < result.length; ++i) {
 					result[i] = (byte) (waveformi[i].re());
 				}
-			if (increment == 4) {
-				//NoiseGUI.playSound.setMaximum(result.length - 48);
-				NoiseGUI.playSound.setMaximum(result.length - 49);
-			} else {
-				//NoiseGUI.playSound.setMaximum((int) (result.length / 2.0) - 48);
-				NoiseGUI.playSound.setMaximum((int) (result.length / 2.0) - 49);
-			}
+			NoiseGUI.playSound.setMaximum(result.length - outer);
 			int byteLength = NoiseGUI.playSound.getMaximum();
 			//int seconds = (int) (byteLength / 44100.0) % 60;
 			//int totalSeconds = (int) (byteLength / 44100.0) % 60;
@@ -819,13 +819,7 @@ public class Modify {
 				for (int i = 0; i < waveformi.length; ++i) {
 					result[i] = (byte) (waveformi[i].re());
 				}
-				if (increment == 4) {
-					//NoiseGUI.playSound.setMaximum(result.length - 48);
-					NoiseGUI.playSound.setMaximum(result.length - 49);
-				} else {
-					//NoiseGUI.playSound.setMaximum((int) (result.length / 2.0) - 48);
-					NoiseGUI.playSound.setMaximum((int) (result.length / 2.0) - 49);
-				}
+				NoiseGUI.playSound.setMaximum(result.length - outer);
 				int byteLength = NoiseGUI.playSound.getMaximum();
 				//int seconds = (int) (byteLength / 44100.0) % 60;
 				//int totalSeconds = (int) (byteLength / 44100.0) % 60;
@@ -870,7 +864,7 @@ public class Modify {
 				//file2 = exportFile;
 				file2 = new File(fileName);
 				output = new FileOutputStream(file2);
-				for (int i = 0; i < 48; i++) {
+				for (int i = 0; i < outer; i++) {
 					output.write(bytes[i]);
 				}
 			} catch (Exception e) {
@@ -900,7 +894,7 @@ public class Modify {
 				/*bytes = addNoise(bytes);
 				 */
 				//for (int index = 0; (index + 49) < bytes.length - 48; ++index) {
-				for (int index = 0; (index + 48) < bytes.length - 48; ++index) {
+				for (int index = 0; (index + outer) < bytes.length - outer; ++index) {
 					output.write(bytes[index]);
 				}
 			}
@@ -1094,7 +1088,7 @@ public class Modify {
 				byteArray = bytes;
 				//startIndex = index + 48;
 				//startIndex = index + 49;
-				startIndex = num + 49;
+				startIndex = num + outer;
 				while (startIndex % 4 != 0) {
 					startIndex--;
 				}
